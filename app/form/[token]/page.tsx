@@ -29,6 +29,14 @@ function formatRupiah(n: number) {
 
 type PageState = 'loading' | 'not_found' | 'already_submitted' | 'form' | 'success' | 'error';
 
+// ✅ Tipe baru untuk data yang dikembalikan saat already_submitted
+type AlreadySubmittedData = {
+  studentname: string;
+  next_grade: number;
+  selected_subjects: string[];
+  submitted_at: string;
+};
+
 function CoLearnLogo({ size = 30 }: { size?: number }) {
   return (
     <svg viewBox="0 0 430 90" xmlns="http://www.w3.org/2000/svg" height={size} style={{ display: 'block' }} aria-label="CoLearn">
@@ -48,6 +56,68 @@ function SectionHeader({ label }: { label: string }) {
   );
 }
 
+// ✅ Komponen konfirmasi — dipakai oleh 'success' dan 'already_submitted'
+function ConfirmationView({
+  studentname,
+  subjects,
+  selectedIds,
+  isRevisit,
+}: {
+  studentname: string;
+  subjects: Subject[];
+  selectedIds: string[];
+  isRevisit: boolean;
+}) {
+  const chosen = subjects.filter(s => selectedIds.includes(s.id));
+  const total = chosen.reduce((a, s) => a + s.pricePerMonth, 0);
+  const totalSessions = chosen.reduce((a, s) => a + s.sessionsPerWeek, 0);
+
+  return (
+    <div className="cl-form-wrap">
+      <div className="cl-heading-block">
+        <h1 className="cl-heading">Terima Kasih,<br />{studentname}!</h1>
+        <p className="cl-heading-sub">
+          {isRevisit
+            ? 'Anda sudah mengisi form ini sebelumnya. Berikut pilihan yang tercatat.'
+            : 'Pilihan mata pelajaran semester depan sudah kami terima.'}
+        </p>
+      </div>
+      <div className="cl-card">
+        <SectionHeader label="RINGKASAN PILIHAN" />
+        {isRevisit && (
+          <div className="cl-revisit-badge">
+            ✓ Form sudah diisi — pilihan tidak dapat diubah
+          </div>
+        )}
+        <table className="cl-summary-table">
+          <tbody>
+            {chosen.map(s => (
+              <tr key={s.id}>
+                <td className="cl-summary-name">{s.label}</td>
+                <td className="cl-summary-price">{formatRupiah(s.pricePerMonth)}/bln</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="cl-summary-total">
+              <td>Total per bulan</td>
+              <td className="cl-summary-total-amt">{formatRupiah(total)}</td>
+            </tr>
+            <tr className="cl-summary-total">
+              <td>Total kelas per minggu</td>
+              <td className="cl-summary-total-amt">{totalSessions}×</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div className="cl-disclaimer">
+          <span className="cl-disc-icon">🔔</span>
+          <p>Link pembayaran akan dikirimkan mulai <strong>22 Juni 2026</strong>.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FormPage() {
   const params = useParams();
   const token = params?.token as string;
@@ -56,20 +126,36 @@ export default function FormPage() {
   const [selected, setSelected] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  // ✅ State baru untuk simpan data already_submitted dari Apps Script
+  const [alreadySubmittedData, setAlreadySubmittedData] = useState<AlreadySubmittedData | null>(null);
 
   useEffect(() => {
     if (!token) return;
     fetch(`/api/student/${token}`)
       .then(r => r.json())
       .then(data => {
-        if (data.error === 'not_found') setPageState('not_found');
-        else if (data.error === 'already_submitted') setPageState('already_submitted');
-        else { setStudent(data); setPageState('form'); }
+        if (data.error === 'not_found') {
+          setPageState('not_found');
+        } else if (data.error === 'already_submitted') {
+          // ✅ Simpan data sebelumnya, lalu set state
+          setAlreadySubmittedData({
+            studentname: data.studentname,
+            next_grade: data.next_grade,
+            selected_subjects: data.selected_subjects ?? [],
+            submitted_at: data.submitted_at,
+          });
+          setPageState('already_submitted');
+        } else {
+          setStudent(data);
+          setPageState('form');
+        }
       })
       .catch(() => setPageState('error'));
   }, [token]);
 
-  const subjects = student ? (SUBJECTS_BY_GRADE[student.next_grade] ?? BASE_SUBJECTS) : [];
+  const subjects = student
+    ? (SUBJECTS_BY_GRADE[student.next_grade] ?? BASE_SUBJECTS)
+    : [];
   const total = subjects.filter(s => selected.includes(s.id)).reduce((a, s) => a + s.pricePerMonth, 0);
   const totalSessions = subjects.filter(s => selected.includes(s.id)).reduce((a, s) => a + s.sessionsPerWeek, 0);
 
@@ -97,11 +183,18 @@ export default function FormPage() {
         body: JSON.stringify({ token, selected_subjects: selected }),
       });
       const data = await res.json();
-      if (data.success) setPageState('success');
-      else if (data.error === 'already_submitted') setPageState('already_submitted');
-      else setErrorMsg('Terjadi kesalahan. Silakan coba lagi.');
-    } catch { setErrorMsg('Gagal mengirim data. Periksa koneksi internet Anda.'); }
-    finally { setSubmitting(false); }
+      if (data.success) {
+        setPageState('success');
+      } else if (data.error === 'already_submitted') {
+        setPageState('already_submitted');
+      } else {
+        setErrorMsg('Terjadi kesalahan. Silakan coba lagi.');
+      }
+    } catch {
+      setErrorMsg('Gagal mengirim data. Periksa koneksi internet Anda.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -125,19 +218,22 @@ export default function FormPage() {
             <p className="cl-status-desc">Link yang Anda gunakan tidak ditemukan atau sudah kadaluarsa. Hubungi kami untuk mendapatkan link yang benar.</p>
           </div>
         )}
-        {pageState === 'already_submitted' && (
-          <div className="cl-status">
-            <div className="cl-status-icon cl-status-icon--ok">✓</div>
-            <h1 className="cl-status-title">Form Sudah Diisi</h1>
-            <p className="cl-status-desc">Anda sudah mengisi form intensi ini sebelumnya. Terima kasih atas konfirmasinya!</p>
-          </div>
-        )}
         {pageState === 'error' && (
           <div className="cl-status">
             <div className="cl-status-icon cl-status-icon--danger">!</div>
             <h1 className="cl-status-title">Terjadi Kesalahan</h1>
             <p className="cl-status-desc">Tidak dapat memuat data. Periksa koneksi internet Anda dan muat ulang halaman.</p>
           </div>
+        )}
+
+        {/* ✅ already_submitted: tampilkan konfirmasi dengan data dari Sheet */}
+        {pageState === 'already_submitted' && alreadySubmittedData && (
+          <ConfirmationView
+            studentname={alreadySubmittedData.studentname}
+            subjects={SUBJECTS_BY_GRADE[alreadySubmittedData.next_grade] ?? BASE_SUBJECTS}
+            selectedIds={alreadySubmittedData.selected_subjects}
+            isRevisit={true}
+          />
         )}
 
         {pageState === 'form' && student && (
@@ -204,44 +300,15 @@ export default function FormPage() {
           </div>
         )}
 
-        {pageState === 'success' && student && (() => {
-          const chosen = subjects.filter(s => selected.includes(s.id));
-          return (
-            <div className="cl-form-wrap">
-              <div className="cl-heading-block">
-                <h1 className="cl-heading">Terima Kasih,<br />{student.studentname}!</h1>
-                <p className="cl-heading-sub">Pilihan mata pelajaran semester depan sudah kami terima.</p>
-              </div>
-              <div className="cl-card">
-                <SectionHeader label="RINGKASAN PILIHAN" />
-                <table className="cl-summary-table">
-                  <tbody>
-                    {chosen.map(s => (
-                      <tr key={s.id}>
-                        <td className="cl-summary-name">{s.label}</td>
-                        <td className="cl-summary-price">{formatRupiah(s.pricePerMonth)}/bln</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr className="cl-summary-total">
-                      <td>Total per bulan</td>
-                      <td className="cl-summary-total-amt">{formatRupiah(total)}</td>
-                    </tr>
-                    <tr className="cl-summary-total">
-                      <td>Total kelas per minggu</td>
-                      <td className="cl-summary-total-amt">{totalSessions}×</td>
-                    </tr>
-                  </tfoot>
-                </table>
-                <div className="cl-disclaimer">
-                  <span className="cl-disc-icon">🔔</span>
-                  <p>Link pembayaran akan dikirimkan mulai <strong>22 Juni 2026</strong>.</p>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
+        {/* ✅ success: pakai ConfirmationView yang sama, isRevisit=false */}
+        {pageState === 'success' && student && (
+          <ConfirmationView
+            studentname={student.studentname}
+            subjects={subjects}
+            selectedIds={selected}
+            isRevisit={false}
+          />
+        )}
       </main>
 
       <style>{css}</style>
@@ -484,6 +551,18 @@ const css = `
   .cl-summary-total-amt {
     font-family: 'Overpass', sans-serif;
     font-weight: 900; font-size: 20px; color: #2B5CE6; text-align: right;
+  }
+
+  /* ✅ Badge baru untuk revisit */
+  .cl-revisit-badge {
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #15803D;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
   }
 
   @media (max-width: 600px) {
