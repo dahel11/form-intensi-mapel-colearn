@@ -1,7 +1,10 @@
-// MOCK — hapus ini dan ganti dengan versi asli setelah Apps Script siap
-export async function GET() {
-  return Response.json({
-    studentname: 'Andi Prasetyo',
-    next_grade: 9,
-  });
+import { NextRequest } from 'next/server';
+
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { token: string } }
+) {
+  const res = await fetch(`${process.env.APPS_SCRIPT_URL}?token=${params.token}`);
+  const data = await res.json();
+  return Response.json(data);
 }
