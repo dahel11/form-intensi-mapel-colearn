@@ -86,7 +86,7 @@ function ConfirmationView({
         <SectionHeader label="RINGKASAN PILIHAN" />
         {isRevisit && (
           <div className="cl-revisit-badge">
-            ✓ Form sudah diisi — pilihan tidak dapat diubah
+            ✓ Form sudah diisi — jika ada perubahan, hubungi WA Kakak Siaga
           </div>
         )}
         <table className="cl-summary-table">
