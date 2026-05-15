@@ -8,7 +8,7 @@ type Subject = { id: string; label: string; pricePerMonth: number; };
 
 const BASE_SUBJECTS: Subject[] = [
   { id: 'mtk_1x', label: 'Matematika 1×/minggu', pricePerMonth: 90000 },
-  { id: 'mtk_2x', label: 'Matematika 2×/minggu', pricePerMonth: 80000 },
+  { id: 'mtk_2x', label: 'Matematika 2×/minggu', pricePerMonth: 170000 },
   { id: 'ipa',    label: 'IPA',                  pricePerMonth: 80000 },
 ];
 
@@ -17,7 +17,7 @@ const SUBJECTS_BY_GRADE: Record<number, Subject[]> = {
   8: BASE_SUBJECTS, 9: BASE_SUBJECTS, 10: BASE_SUBJECTS,
   11: [
     { id: 'mtk_1x', label: 'Matematika 1×/minggu', pricePerMonth: 90000 },
-    { id: 'mtk_2x', label: 'Matematika 2×/minggu', pricePerMonth: 80000 },
+    { id: 'mtk_2x', label: 'Matematika 2×/minggu', pricePerMonth: 170000 },
     { id: 'fisika', label: 'Fisika',               pricePerMonth: 80000 },
     { id: 'kimia',  label: 'Kimia',                pricePerMonth: 80000 },
   ],
