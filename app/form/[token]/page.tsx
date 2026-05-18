@@ -98,7 +98,7 @@ function ConfirmationView({
           </tbody>
           <tfoot>
             <tr className="cl-summary-total">
-              <td>Total per bulan</td>
+              <td>Total biaya per bulan</td>
               <td className="cl-summary-total-amt">{formatRupiah(total)}</td>
             </tr>
             <tr className="cl-summary-total">
@@ -284,7 +284,7 @@ export default function FormPage() {
               )}
               {selected.length > 0 && (
                 <div className="cl-total-row">
-                  <span className="cl-total-label">Total per bulan</span>
+                  <span className="cl-total-label">Total biaya per bulan</span>
                   <span className="cl-total-amt">{formatRupiah(total)}</span>
                 </div>
               )}
