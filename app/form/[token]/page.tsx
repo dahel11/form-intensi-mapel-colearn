@@ -46,6 +46,12 @@ type AlreadySubmittedData = {
   submitted_at: string;
 };
 
+function CoLearnLogo() {
+  return (
+    <img src="/CoLearn Logo Blue.svg" height={28} alt="CoLearn" style={{ display: 'block' }} />
+  );
+}
+
 function ConfirmationView({
   studentname,
   subjects,
@@ -64,8 +70,7 @@ function ConfirmationView({
   return (
     <div className="page-root">
       <header className="top-bar">
-        <span className="brand-dot" />
-        <span className="brand-name">CoLearn</span>
+        <CoLearnLogo />
       </header>
       <main className="body">
         <div className="badge">✓ Pilihan Tercatat</div>
@@ -235,8 +240,7 @@ export default function FormPage() {
   return (
     <div className="page-root">
       <header className="top-bar">
-        <span className="brand-dot" />
-        <span className="brand-name">CoLearn</span>
+        <CoLearnLogo />
       </header>
 
       <main className="body">
@@ -373,15 +377,10 @@ const css = `
   }
 
   .top-bar {
-    display: flex; align-items: center; gap: 8px;
-    padding: 14px 20px;
+    display: flex; align-items: center;
+    padding: 12px 20px;
     border-bottom: 0.5px solid #e5e7eb;
   }
-  .brand-dot {
-    display: block; width: 8px; height: 8px;
-    border-radius: 50%; background: #4A6CF7; flex-shrink: 0;
-  }
-  .brand-name { font-size: 13px; font-weight: 500; color: #6b7280; }
 
   .body {
     max-width: 480px; margin: 0 auto;
@@ -392,7 +391,7 @@ const css = `
   .badge {
     display: inline-block; align-self: flex-start;
     font-size: 11px; font-weight: 500;
-    color: #4A6CF7; background: #eef1fe;
+    color: #2B5CE6; background: #eef1fe;
     border-radius: 20px; padding: 4px 10px;
     margin-bottom: 12px; letter-spacing: 0.02em;
   }
@@ -428,7 +427,7 @@ const css = `
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; background: #fff; transition: all 0.12s;
   }
-  .subject-check--checked { background: #4A6CF7; border-color: #4A6CF7; }
+  .subject-check--checked { background: #2B5CE6; border-color: #2B5CE6; }
 
   .check-icon { color: #fff; font-size: 11px; font-weight: 700; line-height: 1; }
 
@@ -476,12 +475,12 @@ const css = `
 
   .btn-submit {
     width: 100%; padding: 14px;
-    background: #4A6CF7; color: #fff;
+    background: #2B5CE6; color: #fff;
     border: none; border-radius: 10px;
     font-size: 15px; font-weight: 500; cursor: pointer;
     margin-top: 20px; transition: background 0.15s;
   }
-  .btn-submit:hover:not(.btn-submit--disabled) { background: #3b5de6; }
+  .btn-submit:hover:not(.btn-submit--disabled) { background: #1E4BD4; }
   .btn-submit--disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
 
   .error-msg {
@@ -496,7 +495,7 @@ const css = `
   }
   .spinner {
     width: 36px; height: 36px;
-    border: 2.5px solid #e5e7eb; border-top-color: #4A6CF7;
+    border: 2.5px solid #e5e7eb; border-top-color: #2B5CE6;
     border-radius: 50%; animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
