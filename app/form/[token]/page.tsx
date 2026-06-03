@@ -7,24 +7,34 @@ type StudentData = { studentname: string; next_grade: number; };
 type Subject = { id: string; label: string; pricePerMonth: number; sessionsPerWeek: number; };
 
 const BASE_SUBJECTS: Subject[] = [
-  { id: 'mtk_1x', label: 'Matematika 1×/minggu', pricePerMonth: 90000,  sessionsPerWeek: 1 },
-  { id: 'mtk_2x', label: 'Matematika 2×/minggu', pricePerMonth: 170000, sessionsPerWeek: 2 },
-  { id: 'ipa',    label: 'IPA',                  pricePerMonth: 80000,  sessionsPerWeek: 1 },
+  { id: 'mtk_1x', label: 'Matematika', pricePerMonth: 90000,  sessionsPerWeek: 1 },
+  { id: 'mtk_2x', label: 'Matematika', pricePerMonth: 170000, sessionsPerWeek: 2 },
+  { id: 'ipa',    label: 'IPA',        pricePerMonth: 80000,  sessionsPerWeek: 1 },
 ];
 
 const SUBJECTS_BY_GRADE: Record<number, Subject[]> = {
   5: BASE_SUBJECTS, 6: BASE_SUBJECTS, 7: BASE_SUBJECTS,
   8: BASE_SUBJECTS, 9: BASE_SUBJECTS, 10: BASE_SUBJECTS,
   11: [
-    { id: 'mtk_1x', label: 'Matematika 1×/minggu', pricePerMonth: 90000,  sessionsPerWeek: 1 },
-    { id: 'mtk_2x', label: 'Matematika 2×/minggu', pricePerMonth: 170000, sessionsPerWeek: 2 },
-    { id: 'fisika', label: 'Fisika',               pricePerMonth: 80000,  sessionsPerWeek: 1 },
-    { id: 'kimia',  label: 'Kimia',                pricePerMonth: 80000,  sessionsPerWeek: 1 },
+    { id: 'mtk_1x', label: 'Matematika', pricePerMonth: 90000,  sessionsPerWeek: 1 },
+    { id: 'mtk_2x', label: 'Matematika', pricePerMonth: 170000, sessionsPerWeek: 2 },
+    { id: 'fisika', label: 'Fisika',     pricePerMonth: 80000,  sessionsPerWeek: 1 },
+    { id: 'kimia',  label: 'Kimia',      pricePerMonth: 80000,  sessionsPerWeek: 1 },
   ],
 };
 
+function getFreqLabel(id: string): string {
+  if (id === 'mtk_1x') return '1× seminggu';
+  if (id === 'mtk_2x') return '2× seminggu';
+  return '1× seminggu';
+}
+
 function formatRupiah(n: number) {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n);
+  return 'Rp' + new Intl.NumberFormat('id-ID').format(n);
+}
+
+function firstNameOnly(fullname: string) {
+  return fullname.split(' ')[0];
 }
 
 type PageState = 'loading' | 'not_found' | 'already_submitted' | 'form' | 'success' | 'error';
@@ -35,25 +45,6 @@ type AlreadySubmittedData = {
   selected_subjects: string[];
   submitted_at: string;
 };
-
-function CoLearnLogo({ size = 30 }: { size?: number }) {
-  return (
-    <svg viewBox="0 0 430 90" xmlns="http://www.w3.org/2000/svg" height={size} style={{ display: 'block' }} aria-label="CoLearn">
-      <text x="2" y="76" fontFamily="'Overpass', sans-serif" fontWeight="900" fontSize="82" fill="#2B5CE6">co</text>
-      <polygon points="170,16 170,66 202,41" fill="#F5C518" />
-      <text x="212" y="76" fontFamily="'Overpass', sans-serif" fontWeight="900" fontSize="82" fill="#2B5CE6">learn</text>
-    </svg>
-  );
-}
-
-function SectionHeader({ label }: { label: string }) {
-  return (
-    <div className="cl-section-header">
-      <span className="cl-section-bar" />
-      <span className="cl-section-label">{label}</span>
-    </div>
-  );
-}
 
 function ConfirmationView({
   studentname,
@@ -71,47 +62,65 @@ function ConfirmationView({
   const totalSessions = chosen.reduce((a, s) => a + s.sessionsPerWeek, 0);
 
   return (
-    <div className="cl-form-wrap">
-      <div className="cl-heading-block">
-        <h1 className="cl-heading">Terima Kasih,<br />{studentname}!</h1>
-        <p className="cl-heading-sub">
+    <div className="page-root">
+      <header className="top-bar">
+        <span className="brand-dot" />
+        <span className="brand-name">CoLearn</span>
+      </header>
+      <main className="body">
+        <div className="badge">✓ Pilihan Tercatat</div>
+        <h1 className="greeting">
+          Terima kasih, {firstNameOnly(studentname)}!
+        </h1>
+        <p className="subtext">
           {isRevisit
-            ? 'Anda sudah mengisi form ini sebelumnya. Berikut pilihan yang tercatat.'
+            ? 'Kamu sudah mengisi form ini sebelumnya. Berikut pilihan yang kami terima.'
             : 'Pilihan mata pelajaran semester depan sudah kami terima.'}
         </p>
-      </div>
-      <div className="cl-card">
-        <SectionHeader label="RINGKASAN PILIHAN" />
-        {isRevisit && (
-          <div className="cl-revisit-badge">
-            ✓ Form sudah diisi — jika ada perubahan, hubungi WA Kakak Siaga
+
+        <div className="divider" />
+
+        <p className="section-label">Ringkasan</p>
+        <div className="summary-box">
+          {chosen.map(s => (
+            <div className="summary-row" key={s.id}>
+              <span className="summary-mapel">
+                {s.label}
+                {(s.id === 'mtk_1x' || s.id === 'mtk_2x') && (
+                  <span className="summary-freq-small"> · {getFreqLabel(s.id)}</span>
+                )}
+              </span>
+              <span className="summary-price">{formatRupiah(s.pricePerMonth)}</span>
+            </div>
+          ))}
+          <div className="summary-total-row">
+            <span className="summary-total-label">Total per bulan</span>
+            <span className="summary-total-amt">{formatRupiah(total)}</span>
           </div>
-        )}
-        <table className="cl-summary-table">
-          <tbody>
-            {chosen.map(s => (
-              <tr key={s.id}>
-                <td className="cl-summary-name">{s.label}</td>
-                <td className="cl-summary-price">{formatRupiah(s.pricePerMonth)}/bln</td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr className="cl-summary-total">
-              <td>Total biaya per bulan</td>
-              <td className="cl-summary-total-amt">{formatRupiah(total)}</td>
-            </tr>
-            <tr className="cl-summary-total">
-              <td>Total kelas per minggu</td>
-              <td className="cl-summary-total-amt">{totalSessions}×</td>
-            </tr>
-          </tfoot>
-        </table>
-        <div className="cl-disclaimer">
-          <span className="cl-disc-icon">🔔</span>
-          <p>Link pembayaran akan dikirimkan mulai <strong>22 Juni 2026</strong>.</p>
+          <div className="summary-sessions-row">
+            <span className="summary-sessions-label">Total kelas per minggu</span>
+            <span className="summary-sessions-amt">{totalSessions}× seminggu</span>
+          </div>
         </div>
-      </div>
+
+        <div className="notes-stack">
+          <div className="note-item">
+            <span className="note-icon">🕐</span>
+            <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih.</span>
+          </div>
+          <div className="note-item">
+            <span className="note-icon">ℹ️</span>
+            <span>Pembayaran harga semester akan diinformasikan menyusul.</span>
+          </div>
+          {isRevisit && (
+            <div className="note-item note-item--green">
+              <span className="note-icon">✓</span>
+              <span>Form sudah diisi — jika ada perubahan, hubungi WA Kakak Siaga.</span>
+            </div>
+          )}
+        </div>
+      </main>
+      <style>{css}</style>
     </div>
   );
 }
@@ -152,15 +161,16 @@ export default function FormPage() {
   const subjects = student
     ? (SUBJECTS_BY_GRADE[student.next_grade] ?? BASE_SUBJECTS)
     : [];
-  const total = subjects.filter(s => selected.includes(s.id)).reduce((a, s) => a + s.pricePerMonth, 0);
-  const totalSessions = subjects.filter(s => selected.includes(s.id)).reduce((a, s) => a + s.sessionsPerWeek, 0);
 
-  // ✅ Validasi: IPA/Fisika/Kimia wajib dipasangkan dengan Matematika
   const hasScienceOnly =
     selected.some(id => ['ipa', 'fisika', 'kimia'].includes(id)) &&
     !selected.some(id => ['mtk_1x', 'mtk_2x'].includes(id));
 
   const canSubmit = selected.length > 0 && !hasScienceOnly;
+
+  const chosenSubjects = subjects.filter(s => selected.includes(s.id));
+  const total = chosenSubjects.reduce((a, s) => a + s.pricePerMonth, 0);
+  const totalSessions = chosenSubjects.reduce((a, s) => a + s.sessionsPerWeek, 0);
 
   function toggle(id: string) {
     setSelected(prev => {
@@ -200,383 +210,302 @@ export default function FormPage() {
     }
   }
 
+  if (pageState === 'already_submitted' && alreadySubmittedData) {
+    return (
+      <ConfirmationView
+        studentname={alreadySubmittedData.studentname}
+        subjects={SUBJECTS_BY_GRADE[alreadySubmittedData.next_grade] ?? BASE_SUBJECTS}
+        selectedIds={alreadySubmittedData.selected_subjects}
+        isRevisit={true}
+      />
+    );
+  }
+
+  if (pageState === 'success' && student) {
+    return (
+      <ConfirmationView
+        studentname={student.studentname}
+        subjects={subjects}
+        selectedIds={selected}
+        isRevisit={false}
+      />
+    );
+  }
+
   return (
-    <div className="cl-root">
-      <nav className="cl-nav">
-        <CoLearnLogo size={28} />
-        <span className="cl-nav-title">Formulir Intensi Belajar</span>
-      </nav>
+    <div className="page-root">
+      <header className="top-bar">
+        <span className="brand-dot" />
+        <span className="brand-name">CoLearn</span>
+      </header>
 
-      <main className="cl-body">
+      <main className="body">
         {pageState === 'loading' && (
-          <div className="cl-status">
-            <div className="cl-spinner" />
-            <p className="cl-status-desc">Memuat data…</p>
-          </div>
-        )}
-        {pageState === 'not_found' && (
-          <div className="cl-status">
-            <div className="cl-status-icon cl-status-icon--danger">✕</div>
-            <h1 className="cl-status-title">Link Tidak Valid</h1>
-            <p className="cl-status-desc">Link yang Anda gunakan tidak ditemukan atau sudah kadaluarsa. Hubungi kami untuk mendapatkan link yang benar.</p>
-          </div>
-        )}
-        {pageState === 'error' && (
-          <div className="cl-status">
-            <div className="cl-status-icon cl-status-icon--danger">!</div>
-            <h1 className="cl-status-title">Terjadi Kesalahan</h1>
-            <p className="cl-status-desc">Tidak dapat memuat data. Periksa koneksi internet Anda dan muat ulang halaman.</p>
+          <div className="status-wrap">
+            <div className="spinner" />
+            <p className="status-desc">Memuat data…</p>
           </div>
         )}
 
-        {pageState === 'already_submitted' && alreadySubmittedData && (
-          <ConfirmationView
-            studentname={alreadySubmittedData.studentname}
-            subjects={SUBJECTS_BY_GRADE[alreadySubmittedData.next_grade] ?? BASE_SUBJECTS}
-            selectedIds={alreadySubmittedData.selected_subjects}
-            isRevisit={true}
-          />
+        {pageState === 'not_found' && (
+          <div className="status-wrap">
+            <div className="status-icon status-icon--danger">✕</div>
+            <h1 className="status-title">Link Tidak Valid</h1>
+            <p className="status-desc">Link yang kamu gunakan tidak ditemukan atau sudah kadaluarsa. Hubungi kami untuk mendapatkan link yang benar.</p>
+          </div>
+        )}
+
+        {pageState === 'error' && (
+          <div className="status-wrap">
+            <div className="status-icon status-icon--danger">!</div>
+            <h1 className="status-title">Terjadi Kesalahan</h1>
+            <p className="status-desc">Tidak dapat memuat data. Periksa koneksi internet dan muat ulang halaman.</p>
+          </div>
         )}
 
         {pageState === 'form' && student && (
-          <div className="cl-form-wrap">
-            <div className="cl-heading-block">
-              <h1 className="cl-heading">Pilih Paket Belajar<br />Semester Depan</h1>
-              <p className="cl-heading-sub">Pilihan akan digunakan sebagai dasar pengiriman link pembayaran. Pastikan sesuai kebutuhan.</p>
-            </div>
-            <div className="cl-card">
-              <SectionHeader label="DATA MURID" />
-              <div className="cl-field">
-                <label className="cl-label">Nama Murid</label>
-                <div className="cl-input-static">{student.studentname}</div>
-              </div>
-              <div className="cl-field">
-                <label className="cl-label">Kelas Semester Depan</label>
-                <div className="cl-input-static">Kelas {student.next_grade}</div>
-              </div>
-              <div className="cl-divider" />
-              <SectionHeader label="PILIHAN MATA PELAJARAN" />
-              <p className="cl-field-hint" style={{ marginBottom: '16px' }}>Anda dapat memilih lebih dari satu mata pelajaran.</p>
-              <div className="cl-subject-list">
-                {subjects.map(s => {
-                  const checked = selected.includes(s.id);
-                  return (
-                    <button key={s.id} type="button"
-                      className={`cl-subject-row${checked ? ' cl-subject-row--checked' : ''}`}
-                      onClick={() => toggle(s.id)} aria-pressed={checked}>
-                      <div className={`cl-checkbox${checked ? ' cl-checkbox--checked' : ''}`}>
-                        {checked && <span className="cl-checkmark">✓</span>}
-                      </div>
-                      <span className="cl-subject-name">{s.label}</span>
-                      <span className="cl-subject-price">
-                        {formatRupiah(s.pricePerMonth)}<span className="cl-price-unit">/bulan</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <p className="cl-field-hint">* Matematika 1× dan 2×/minggu tidak bisa dipilih bersamaan</p>
-              {/* ✅ Pesan warning science-only */}
-              {hasScienceOnly && (
-                <p className="cl-error">
-                  IPA/Fisika/Kimia wajib diambil bersama Matematika.
-                </p>
-              )}
-              {selected.length > 0 && (
-                <div className="cl-total-row">
-                  <span className="cl-total-label">Total biaya per bulan</span>
-                  <span className="cl-total-amt">{formatRupiah(total)}</span>
-                </div>
-              )}
-              {selected.length > 0 && (
-                <div className="cl-total-row">
-                  <span className="cl-total-label">Total kelas per minggu</span>
-                  <span className="cl-total-amt">{totalSessions}×</span>
-                </div>
-              )}
-              <div className="cl-disclaimer">
-                <span className="cl-disc-icon">🔔</span>
-                <p>Link pembayaran akan dikirimkan mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih.</p>
-              </div>
-              {errorMsg && <p className="cl-error">{errorMsg}</p>}
-              {/* ✅ Tombol Kirim pakai canSubmit */}
-              <button type="button"
-                className={`cl-submit${!canSubmit || submitting ? ' cl-submit--disabled' : ''}`}
-                disabled={!canSubmit || submitting} onClick={handleSubmit}>
-                {submitting ? 'Mengirim…' : 'Kirim Pilihan'}
-              </button>
-            </div>
-          </div>
-        )}
+          <>
+            <div className="badge">Survei Minat</div>
+            <h1 className="greeting">
+              Halo, {firstNameOnly(student.studentname)} 👋<br />
+              Pilih paket untuk kelas {student.next_grade}
+            </h1>
+            <p className="subtext">
+              Isi form ini untuk memberi tahu kami mata pelajaran yang diminati — bukan pembayaran.
+            </p>
 
-        {pageState === 'success' && student && (
-          <ConfirmationView
-            studentname={student.studentname}
-            subjects={subjects}
-            selectedIds={selected}
-            isRevisit={false}
-          />
+            <div className="divider" />
+
+            <p className="section-label">Mata pelajaran</p>
+            <div className="subject-list">
+              {subjects.map(s => {
+                const checked = selected.includes(s.id);
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className={`subject-item${checked ? ' subject-item--checked' : ''}`}
+                    onClick={() => toggle(s.id)}
+                    aria-pressed={checked}
+                  >
+                    <div className={`subject-check${checked ? ' subject-check--checked' : ''}`}>
+                      {checked && <span className="check-icon">✓</span>}
+                    </div>
+                    <div className="subject-text">
+                      <span className="subject-name">{s.label}</span>
+                      <span className="subject-freq">{getFreqLabel(s.id)}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {hasScienceOnly && (
+              <p className="error-msg">IPA/Fisika/Kimia wajib diambil bersama Matematika.</p>
+            )}
+
+            <p className="section-label" style={{ marginTop: '24px' }}>Ringkasan</p>
+            <div className="summary-box">
+              {chosenSubjects.length === 0 ? (
+                <p className="summary-empty">Belum ada mata pelajaran yang dipilih.</p>
+              ) : (
+                <>
+                  {chosenSubjects.map(s => (
+                    <div className="summary-row" key={s.id}>
+                      <span className="summary-mapel">
+                        {s.label}
+                        {(s.id === 'mtk_1x' || s.id === 'mtk_2x') && (
+                          <span className="summary-freq-small"> · {getFreqLabel(s.id)}</span>
+                        )}
+                      </span>
+                      <span className="summary-price">{formatRupiah(s.pricePerMonth)}</span>
+                    </div>
+                  ))}
+                  <div className="summary-total-row">
+                    <span className="summary-total-label">Total per bulan</span>
+                    <span className="summary-total-amt">{formatRupiah(total)}</span>
+                  </div>
+                  <div className="summary-sessions-row">
+                    <span className="summary-sessions-label">Total kelas per minggu</span>
+                    <span className="summary-sessions-amt">{totalSessions}× seminggu</span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="notes-stack">
+              <div className="note-item">
+                <span className="note-icon">🕐</span>
+                <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih.</span>
+              </div>
+              <div className="note-item">
+                <span className="note-icon">ℹ️</span>
+                <span>Pembayaran harga semester akan diinformasikan menyusul.</span>
+              </div>
+            </div>
+
+            {errorMsg && <p className="error-msg">{errorMsg}</p>}
+
+            <button
+              type="button"
+              className={`btn-submit${!canSubmit || submitting ? ' btn-submit--disabled' : ''}`}
+              disabled={!canSubmit || submitting}
+              onClick={handleSubmit}
+            >
+              {submitting ? 'Mengirim…' : 'Kirim Pilihan'}
+            </button>
+          </>
         )}
       </main>
-
       <style>{css}</style>
     </div>
   );
 }
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800;900&family=Poppins:wght@400;500;600&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .cl-root {
+  .page-root {
     min-height: 100vh;
     background: #ffffff;
-    font-family: 'Poppins', system-ui, sans-serif;
-    color: #1a1e2e;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: #1a1a1a;
   }
 
-  .cl-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    height: 64px;
-    border-bottom: 1px solid #E8ECF4;
-    background: #ffffff;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+  .top-bar {
+    display: flex; align-items: center; gap: 8px;
+    padding: 14px 20px;
+    border-bottom: 0.5px solid #e5e7eb;
+  }
+  .brand-dot {
+    display: block; width: 8px; height: 8px;
+    border-radius: 50%; background: #4A6CF7; flex-shrink: 0;
+  }
+  .brand-name { font-size: 13px; font-weight: 500; color: #6b7280; }
+
+  .body {
+    max-width: 480px; margin: 0 auto;
+    padding: 28px 20px 80px;
+    display: flex; flex-direction: column;
   }
 
-  .cl-nav-title {
-    font-size: 14px;
-    color: #9BA3B8;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 400;
+  .badge {
+    display: inline-block; align-self: flex-start;
+    font-size: 11px; font-weight: 500;
+    color: #4A6CF7; background: #eef1fe;
+    border-radius: 20px; padding: 4px 10px;
+    margin-bottom: 12px; letter-spacing: 0.02em;
   }
 
-  .cl-body {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
+  .greeting {
+    font-size: 22px; font-weight: 500;
+    line-height: 1.35; color: #111827; margin-bottom: 8px;
   }
 
-  .cl-status {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 80px 24px;
-    gap: 16px;
+  .subtext { font-size: 14px; color: #6b7280; line-height: 1.6; }
+
+  .divider { height: 0.5px; background: #e5e7eb; margin: 24px 0; }
+
+  .section-label {
+    font-size: 11px; font-weight: 500; color: #9ca3af;
+    letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 12px;
   }
 
-  .cl-spinner {
-    width: 40px; height: 40px;
-    border: 3px solid #E8ECF4;
-    border-top-color: #2B5CE6;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .subject-list { display: flex; flex-direction: column; }
 
-  .cl-status-icon {
-    width: 60px; height: 60px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; font-weight: 700;
-  }
-  .cl-status-icon--ok     { background: #DCFCE7; color: #16A34A; }
-  .cl-status-icon--danger { background: #FEE2E2; color: #DC2626; }
-
-  .cl-status-title {
-    font-family: 'Overpass', sans-serif;
-    font-weight: 800; font-size: 26px; color: #0F172A;
-  }
-  .cl-status-desc {
-    font-size: 15px; color: #6B7280;
-    max-width: 360px; line-height: 1.65;
-  }
-
-  .cl-form-wrap { display: flex; flex-direction: column; gap: 32px; }
-
-  .cl-heading-block { display: flex; flex-direction: column; gap: 10px; }
-
-  .cl-heading {
-    font-family: 'Overpass', sans-serif;
-    font-weight: 900; font-size: 36px;
-    line-height: 1.15; color: #0F172A;
-    letter-spacing: -0.5px;
-  }
-
-  .cl-heading-sub {
-    font-size: 15px; color: #6B7280;
-    line-height: 1.6; max-width: 540px;
-  }
-
-  .cl-card {
-    background: #ffffff;
-    border: 1px solid #E2E8F0;
-    border-radius: 16px;
-    padding: 32px;
-    display: flex; flex-direction: column; gap: 20px;
-  }
-
-  .cl-section-header {
-    display: flex; align-items: center; gap: 10px;
-  }
-
-  .cl-section-bar {
-    display: block; width: 4px; height: 18px;
-    background: #2B5CE6; border-radius: 2px; flex-shrink: 0;
-  }
-
-  .cl-section-label {
-    font-family: 'Overpass', sans-serif;
-    font-weight: 800; font-size: 13px;
-    letter-spacing: 0.8px; color: #374151;
-  }
-
-  .cl-field { display: flex; flex-direction: column; gap: 6px; }
-
-  .cl-label {
-    font-size: 14px; font-weight: 500;
-    color: #374151; font-family: 'Poppins', sans-serif;
-  }
-
-  .cl-input-static {
-    padding: 12px 16px;
-    border: 1px solid #E2E8F0;
-    border-radius: 10px;
-    font-size: 15px; color: #1a1e2e;
-    background: #F8FAFC;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-  }
-
-  .cl-divider { height: 1px; background: #F1F5F9; }
-
-  .cl-field-hint {
-    font-size: 13px; color: #94A3B8;
-    font-family: 'Poppins', sans-serif;
-    line-height: 1.5; font-style: italic;
-  }
-
-  .cl-subject-list { display: flex; flex-direction: column; gap: 10px; }
-
-  .cl-subject-row {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 18px;
-    border: 1.5px solid #E2E8F0;
-    border-radius: 12px; background: #ffffff;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
+  .subject-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 0;
+    border: none; border-bottom: 0.5px solid #f3f4f6;
+    background: transparent; cursor: pointer;
     text-align: left; width: 100%;
   }
-  .cl-subject-row:hover { border-color: #93B4F8; background: #F8FAFF; }
-  .cl-subject-row--checked { border-color: #2B5CE6; background: #F0F5FF; }
+  .subject-item:last-of-type { border-bottom: none; }
 
-  .cl-checkbox {
-    width: 22px; height: 22px; border-radius: 6px;
-    border: 2px solid #CBD5E1; background: #ffffff;
+  .subject-check {
+    width: 20px; height: 20px; border-radius: 5px;
+    border: 1.5px solid #d1d5db;
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; transition: all 0.15s;
+    flex-shrink: 0; background: #fff; transition: all 0.12s;
   }
-  .cl-checkbox--checked { background: #2B5CE6; border-color: #2B5CE6; }
+  .subject-check--checked { background: #4A6CF7; border-color: #4A6CF7; }
 
-  .cl-checkmark { color: #ffffff; font-size: 13px; font-weight: 700; line-height: 1; }
+  .check-icon { color: #fff; font-size: 11px; font-weight: 700; line-height: 1; }
 
-  .cl-subject-name {
-    flex: 1; font-size: 15px; font-weight: 500;
-    color: #1a1e2e; font-family: 'Poppins', sans-serif;
+  .subject-text { display: flex; flex-direction: column; gap: 2px; }
+  .subject-name { font-size: 14px; color: #111827; }
+  .subject-freq { font-size: 12px; color: #9ca3af; }
+
+  .summary-box {
+    background: #f9fafb; border-radius: 12px;
+    padding: 14px 16px; min-height: 52px;
   }
+  .summary-empty { font-size: 13px; color: #9ca3af; }
 
-  .cl-subject-price {
-    font-family: 'Overpass', sans-serif;
-    font-weight: 700; font-size: 15px; color: #2B5CE6; white-space: nowrap;
+  .summary-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 6px;
   }
+  .summary-row:last-of-type { margin-bottom: 0; }
+  .summary-mapel { font-size: 13px; color: #374151; }
+  .summary-freq-small { font-size: 12px; color: #9ca3af; }
+  .summary-price { font-size: 13px; color: #111827; font-weight: 500; }
 
-  .cl-price-unit {
-    font-size: 12px; font-weight: 400;
-    color: #94A3B8; font-family: 'Poppins', sans-serif;
+  .summary-total-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-top: 10px; margin-top: 8px;
+    border-top: 0.5px solid #e5e7eb;
   }
+  .summary-total-label { font-size: 12px; color: #6b7280; }
+  .summary-total-amt { font-size: 18px; font-weight: 500; color: #111827; }
 
-  .cl-total-row {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #F0F5FF;
-    border: 1.5px solid #C7D7FA;
-    border-radius: 12px; padding: 16px 20px;
+  .summary-sessions-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-top: 6px;
   }
+  .summary-sessions-label { font-size: 11px; color: #9ca3af; }
+  .summary-sessions-amt { font-size: 12px; color: #9ca3af; font-weight: 500; }
 
-  .cl-total-label {
-    font-size: 14px; color: #374151;
-    font-weight: 500; font-family: 'Poppins', sans-serif;
+  .notes-stack { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .note-item {
+    display: flex; gap: 8px; align-items: flex-start;
+    font-size: 12px; color: #6b7280; line-height: 1.6;
   }
+  .note-item--green { color: #15803d; }
+  .note-icon { font-size: 13px; margin-top: 1px; flex-shrink: 0; }
 
-  .cl-total-amt {
-    font-family: 'Overpass', sans-serif;
-    font-weight: 900; font-size: 22px;
-    color: #2B5CE6; letter-spacing: -0.5px;
+  .btn-submit {
+    width: 100%; padding: 14px;
+    background: #4A6CF7; color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 500; cursor: pointer;
+    margin-top: 20px; transition: background 0.15s;
   }
+  .btn-submit:hover:not(.btn-submit--disabled) { background: #3b5de6; }
+  .btn-submit--disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
 
-  .cl-disclaimer {
-    display: flex; align-items: flex-start; gap: 10px;
-    background: #FFFBEB; border: 1px solid #FDE68A;
-    border-radius: 10px; padding: 12px 16px;
-  }
-  .cl-disc-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
-  .cl-disclaimer p {
-    font-size: 13px; color: #92400E;
-    line-height: 1.55; font-family: 'Poppins', sans-serif;
-  }
-
-  .cl-error {
-    font-size: 13px; color: #DC2626;
-    background: #FEF2F2; border-radius: 8px;
-    padding: 10px 14px; font-family: 'Poppins', sans-serif;
-  }
-
-  .cl-submit {
-    display: block; width: 100%;
-    background: #2B5CE6; color: #ffffff;
-    font-size: 16px; font-weight: 700;
-    font-family: 'Overpass', sans-serif;
-    letter-spacing: 0.1px; border: none;
-    border-radius: 12px; padding: 16px;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-  }
-  .cl-submit:hover:not(.cl-submit--disabled) { background: #1E4BD4; transform: translateY(-1px); }
-  .cl-submit:active:not(.cl-submit--disabled) { transform: translateY(0); }
-  .cl-submit--disabled { background: #CBD5E1; cursor: not-allowed; }
-
-  .cl-summary-table { width: 100%; border-collapse: collapse; font-family: 'Poppins', sans-serif; }
-  .cl-summary-table tbody tr { border-bottom: 1px solid #F1F5F9; }
-  .cl-summary-name { padding: 12px 0; font-size: 14px; color: #374151; }
-  .cl-summary-price { padding: 12px 0; font-size: 14px; color: #2B5CE6; font-weight: 600; text-align: right; }
-  .cl-summary-total { border-top: 2px solid #E2E8F0; }
-  .cl-summary-total td { padding: 14px 0; font-size: 14px; font-weight: 600; color: #374151; }
-  .cl-summary-total-amt {
-    font-family: 'Overpass', sans-serif;
-    font-weight: 900; font-size: 20px; color: #2B5CE6; text-align: right;
+  .error-msg {
+    font-size: 13px; color: #dc2626;
+    background: #fef2f2; border-radius: 8px;
+    padding: 10px 14px; margin-top: 12px;
   }
 
-  .cl-revisit-badge {
-    background: #F0FDF4;
-    border: 1px solid #BBF7D0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: #15803D;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 500;
+  .status-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; padding: 80px 24px; gap: 16px;
   }
-
-  @media (max-width: 600px) {
-    .cl-nav { padding: 0 20px; }
-    .cl-body { padding: 32px 16px 60px; }
-    .cl-card { padding: 24px 18px; }
-    .cl-heading { font-size: 28px; }
-    .cl-nav-title { display: none; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 2.5px solid #e5e7eb; border-top-color: #4A6CF7;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
   }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 700;
+  }
+  .status-icon--danger { background: #fee2e2; color: #dc2626; }
+  .status-title { font-size: 22px; font-weight: 500; color: #111827; }
+  .status-desc { font-size: 14px; color: #6b7280; max-width: 320px; line-height: 1.65; }
 `;
