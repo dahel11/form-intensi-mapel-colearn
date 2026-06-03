@@ -81,7 +81,7 @@ function ConfirmationView({
 
         <div className="divider" />
 
-        <p className="section-label">Ringkasan</p>
+        <p className="section-label">Estimasi Biaya</p>
         <div className="summary-box">
           {chosen.map(s => (
             <div className="summary-row" key={s.id}>
@@ -304,7 +304,7 @@ export default function FormPage() {
               <p className="error-msg">IPA/Fisika/Kimia wajib diambil bersama Matematika.</p>
             )}
 
-            <p className="section-label" style={{ marginTop: '24px' }}>Ringkasan</p>
+            <p className="section-label" style={{ marginTop: '24px' }}>Estimasi Biaya</p>
             <div className="summary-box">
               {chosenSubjects.length === 0 ? (
                 <p className="summary-empty">Belum ada mata pelajaran yang dipilih.</p>
