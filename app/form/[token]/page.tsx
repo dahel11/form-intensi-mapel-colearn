@@ -33,10 +33,6 @@ function formatRupiah(n: number) {
   return 'Rp' + new Intl.NumberFormat('id-ID').format(n);
 }
 
-function firstNameOnly(fullname: string) {
-  return fullname.split(' ')[0];
-}
-
 type PageState = 'loading' | 'not_found' | 'already_submitted' | 'form' | 'success' | 'error';
 
 type AlreadySubmittedData = {
@@ -75,7 +71,7 @@ function ConfirmationView({
       <main className="body">
         <div className="badge">✓ Pilihan Tercatat</div>
         <h1 className="greeting">
-          Terima kasih, {firstNameOnly(studentname)}!
+          Terima kasih, {studentname}!
         </h1>
         <p className="subtext">
           {isRevisit
@@ -115,7 +111,7 @@ function ConfirmationView({
           </div>
           <div className="note-item">
             <span className="note-icon">ℹ️</span>
-            <span>Informasi harga semester akan diinformasikan menyusul.</span>
+            <span>Pembayaran harga semester akan diinformasikan menyusul.</span>
           </div>
           {isRevisit && (
             <div className="note-item note-item--green">
@@ -271,7 +267,7 @@ export default function FormPage() {
           <>
             <div className="badge">Survei Minat</div>
             <h1 className="greeting">
-              Halo, {firstNameOnly(student.studentname)} 👋<br />
+              Halo, {student.studentname} 👋<br />
               Pilih paket untuk kelas {student.next_grade}
             </h1>
             <p className="subtext">
