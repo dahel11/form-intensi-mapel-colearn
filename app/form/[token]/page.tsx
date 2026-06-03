@@ -110,7 +110,7 @@ function ConfirmationView({
           </div>
           <div className="note-item">
             <span className="note-icon">ℹ️</span>
-            <span>Pembayaran harga semester akan diinformasikan menyusul.</span>
+            <span>Informasi harga semester akan diinformasikan menyusul.</span>
           </div>
           {isRevisit && (
             <div className="note-item note-item--green">
