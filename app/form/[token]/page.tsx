@@ -271,7 +271,7 @@ export default function FormPage() {
               Pilih paket untuk kelas {student.next_grade}
             </h1>
             <p className="subtext">
-              Isi form ini untuk memberi tahu kami mata pelajaran yang diminati — bukan pembayaran.
+              Isi form ini untuk memberi tahu kami mata pelajaran yang diminati semester depan — hanya pendataan, bukan pembayaran.
             </p>
 
             <div className="divider" />
