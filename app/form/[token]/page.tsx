@@ -25,6 +25,7 @@ type AlreadySubmittedData = {
   next_grade: number;
   selected_subjects: string[];
   submitted_at: string;
+  payment_mode: PaymentMode;
 };
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -223,6 +224,7 @@ export default function FormPage() {
             next_grade: data.next_grade,
             selected_subjects: data.selected_subjects ?? [],
             submitted_at: data.submitted_at,
+            payment_mode: data.payment_mode ?? 'bulanan',
           });
           setPageState('already_submitted');
         } else {
@@ -287,7 +289,7 @@ export default function FormPage() {
         studentname={alreadySubmittedData.studentname}
         grade={alreadySubmittedData.next_grade}
         selectedIds={alreadySubmittedData.selected_subjects}
-        paymentMode="bulanan"
+        paymentMode={alreadySubmittedData.payment_mode}
         isRevisit={true}
       />
     );
