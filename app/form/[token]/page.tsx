@@ -181,7 +181,7 @@ function ConfirmationView({
         <div className="notes-stack">
           <div className="note-item">
             <span className="note-icon">🕐</span>
-            <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih.</span>
+            <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih ke WA orang tua.</span>
           </div>
           {isRevisit && (
             <div className="note-item note-item--green">
@@ -481,7 +481,7 @@ export default function FormPage() {
             <div className="notes-stack">
               <div className="note-item">
                 <span className="note-icon">🕐</span>
-                <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih.</span>
+                <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih ke WA orang tua.</span>
               </div>
             </div>
 
