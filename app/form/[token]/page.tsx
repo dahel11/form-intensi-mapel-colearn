@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { isFormClosed } from '@/lib/deadline';
+import FormClosedPage from './FormClosedPage';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -52,7 +54,6 @@ function getAllSubjects(grade: number): Subject[] {
   return [...WAJIB, ...getTambahan(grade)];
 }
 
-// Pricing lookup by combination key
 const MONTHLY: Record<string, number> = {
   'mtk_1x': 90000,
   'mtk_2x': 170000,
@@ -199,6 +200,8 @@ function ConfirmationView({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function FormPage() {
+  if (isFormClosed()) return <FormClosedPage />;
+
   const params = useParams();
   const token = params?.token as string;
 
