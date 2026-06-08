@@ -149,7 +149,7 @@ function ConfirmationView({
 
         <div className="divider" />
 
-        <p className="section-label">Ringkasan</p>
+        <p className="section-label">Estimasi Biaya</p>
         <div className="summary-box">
           {chosen.map(s => (
             <div className="summary-item" key={s.id}>
@@ -436,7 +436,7 @@ export default function FormPage() {
 
             <div className="divider" />
 
-            {/* ── Ringkasan ── */}
+            {/* ── Estimasi Biaya ── */}
             <p className="section-label">Ringkasan</p>
             <div className="summary-box">
               {!selectedMtk ? (
