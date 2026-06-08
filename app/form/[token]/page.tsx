@@ -437,7 +437,7 @@ export default function FormPage() {
             <div className="divider" />
 
             {/* ── Estimasi Biaya ── */}
-            <p className="section-label">Ringkasan</p>
+            <p className="section-label">Estimasi Biaya</p>
             <div className="summary-box">
               {!selectedMtk ? (
                 <p className="summary-empty">Belum ada mata pelajaran yang dipilih.</p>
