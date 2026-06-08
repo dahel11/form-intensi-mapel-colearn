@@ -383,7 +383,7 @@ export default function FormPage() {
             <div className="group-divider" />
 
             <p className="subsection-label">Mata Pelajaran Tambahan</p>
-            <p className="subsection-hint">Opsional, boleh pilih lebih dari satu</p>
+            <p className="subsection-hint">Opsional</p>
             <div className="subject-list">
               {tambahan.map(s => {
                 const checked = selectedTambahan.includes(s.id);
