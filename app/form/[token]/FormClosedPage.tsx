@@ -1,3 +1,5 @@
+'use client';
+
 const WA_URL =
   'https://wa.me/6281119954075?text=Aku%20mau%20registrasi%20untuk%20semester%20depan';
 
@@ -17,7 +19,7 @@ export default function FormClosedPage() {
           Hubungi Kakak Siaga CoLearn untuk bertanya terkait pendaftaran semester depan.
         </p>
 
-        
+        <a
           href={WA_URL}
           target="_blank"
           rel="noopener noreferrer"
