@@ -5,32 +5,99 @@ const WA_URL =
 
 export default function FormClosedPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="bg-white border border-gray-200 rounded-2xl p-10 max-w-sm w-full text-center">
+    <div style={{
+      minHeight: '100vh',
+      background: '#ffffff',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      {/* Top bar */}
+      <header style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '12px 20px',
+        borderBottom: '0.5px solid #e5e7eb',
+      }}>
+        <img src="/CoLearn Logo Blue.svg" height={28} alt="CoLearn" style={{ display: 'block' }} />
+      </header>
 
-        <div className="w-16 h-16 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-5">
-          <i className="ti ti-calendar-off text-amber-500 text-3xl" aria-hidden="true" />
+      {/* Body */}
+      <main style={{
+        maxWidth: 480,
+        margin: '0 auto',
+        padding: '60px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        width: '100%',
+      }}>
+        {/* Icon */}
+        <div style={{
+          width: 64,
+          height: 64,
+          borderRadius: '50%',
+          background: '#fffbeb',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginBottom: 20,
+        }}>
+          <i className="ti ti-calendar-off" style={{ fontSize: 28, color: '#d97706' }} aria-hidden="true" />
         </div>
 
-        <h1 className="text-lg font-medium text-gray-900 mb-3">
+        {/* Title */}
+        <h1 style={{
+          fontSize: 17,
+          fontWeight: 600,
+          color: '#111827',
+          marginBottom: 10,
+          lineHeight: 1.3,
+        }}>
           Form pendaftaran minat sudah ditutup
         </h1>
-        <p className="text-sm text-gray-500 leading-relaxed mb-8">
+
+        {/* Subtitle */}
+        <p style={{
+          fontSize: 14,
+          color: '#6b7280',
+          lineHeight: 1.6,
+          marginBottom: 32,
+          maxWidth: 300,
+        }}>
           Hubungi Kakak Siaga CoLearn untuk bertanya terkait pendaftaran semester depan.
         </p>
 
+        {/* WA Button */}
         <a
           href={WA_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-[#25D366] hover:bg-[#1fba59] transition-colors rounded-xl text-white text-sm font-medium"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            width: '100%',
+            maxWidth: 300,
+            padding: '13px 20px',
+            background: '#25D366',
+            borderRadius: 10,
+            color: '#fff',
+            fontSize: 15,
+            fontWeight: 500,
+            textDecoration: 'none',
+          }}
         >
-          <i className="ti ti-brand-whatsapp text-lg" aria-hidden="true" />
+          <i className="ti ti-brand-whatsapp" style={{ fontSize: 20 }} aria-hidden="true" />
           Hubungi Kakak Siaga
         </a>
 
-        <p className="text-xs text-gray-400 mt-5">CoLearn — 2026</p>
-      </div>
+        <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 32 }}>
+          CoLearn — 2026
+        </p>
+      </main>
     </div>
   );
 }
