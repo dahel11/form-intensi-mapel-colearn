@@ -149,7 +149,7 @@ function ConfirmationView({
 
         <div className="divider" />
 
-        <p className="section-label">Estimasi Biaya</p>
+        <p className="section-label">Ringkasan</p>
         <div className="summary-box">
           {chosen.map(s => (
             <div className="summary-item" key={s.id}>
@@ -173,7 +173,7 @@ function ConfirmationView({
           {isSem && (
             <div className="summary-meta-row" style={{ marginTop: 3 }}>
               <span className="summary-meta-label">Periode belajar</span>
-              <span className="summary-meta-val">6 Jul – 13 Des 2026</span>
+              <span className="summary-meta-val">6 Jul – 14 Des 2026</span>
             </div>
           )}
         </div>
@@ -181,7 +181,7 @@ function ConfirmationView({
         <div className="notes-stack">
           <div className="note-item">
             <span className="note-icon">🕐</span>
-            <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih ke WA orang tua.</span>
+            <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih.</span>
           </div>
           {isRevisit && (
             <div className="note-item note-item--green">
@@ -383,7 +383,7 @@ export default function FormPage() {
             <div className="group-divider" />
 
             <p className="subsection-label">Mata Pelajaran Tambahan</p>
-            <p className="subsection-hint">Opsional</p>
+            <p className="subsection-hint">Opsional, boleh pilih lebih dari satu</p>
             <div className="subject-list">
               {tambahan.map(s => {
                 const checked = selectedTambahan.includes(s.id);
@@ -398,7 +398,10 @@ export default function FormPage() {
                     <div className="check-box">
                       {checked && <span className="check-mark">✓</span>}
                     </div>
-                    <span className="subject-name">{s.label}</span>
+                    <div className="subject-text">
+                      <span className="subject-name">{s.label}</span>
+                      <span className="subject-freq">{s.freq}</span>
+                    </div>
                   </button>
                 );
               })}
@@ -436,8 +439,8 @@ export default function FormPage() {
 
             <div className="divider" />
 
-            {/* ── Estimasi Biaya ── */}
-            <p className="section-label">Estimasi Biaya</p>
+            {/* ── Ringkasan ── */}
+            <p className="section-label">Ringkasan</p>
             <div className="summary-box">
               {!selectedMtk ? (
                 <p className="summary-empty">Belum ada mata pelajaran yang dipilih.</p>
@@ -471,7 +474,7 @@ export default function FormPage() {
                   {isSem && (
                     <div className="summary-meta-row" style={{ marginTop: 3 }}>
                       <span className="summary-meta-label">Periode belajar</span>
-                      <span className="summary-meta-val">6 Jul – 13 Des 2026</span>
+                      <span className="summary-meta-val">6 Jul – 14 Des 2026</span>
                     </div>
                   )}
                 </>
@@ -481,7 +484,7 @@ export default function FormPage() {
             <div className="notes-stack">
               <div className="note-item">
                 <span className="note-icon">🕐</span>
-                <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih ke WA orang tua.</span>
+                <span>Link pembayaran dikirim mulai <strong>22 Juni 2026</strong> sesuai mata pelajaran yang dipilih.</span>
               </div>
             </div>
 
