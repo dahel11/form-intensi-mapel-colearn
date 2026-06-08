@@ -173,7 +173,7 @@ function ConfirmationView({
           {isSem && (
             <div className="summary-meta-row" style={{ marginTop: 3 }}>
               <span className="summary-meta-label">Periode belajar</span>
-              <span className="summary-meta-val">6 Jul – 14 Des 2026</span>
+              <span className="summary-meta-val">6 Jul – 13 Des 2026</span>
             </div>
           )}
         </div>
@@ -471,7 +471,7 @@ export default function FormPage() {
                   {isSem && (
                     <div className="summary-meta-row" style={{ marginTop: 3 }}>
                       <span className="summary-meta-label">Periode belajar</span>
-                      <span className="summary-meta-val">6 Jul – 14 Des 2026</span>
+                      <span className="summary-meta-val">6 Jul – 13 Des 2026</span>
                     </div>
                   )}
                 </>
